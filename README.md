@@ -10,11 +10,9 @@ There is no CPU or soft core in the design. Every pixel comes from a state machi
 ![Toolchain](https://img.shields.io/badge/Quartus-Prime%2018.1%20Lite-orange)
 ![License](https://img.shields.io/badge/license-MIT-lightgrey)
 
-<p align="center">
-  <img src="doc/media/demo.gif" alt="Mazewar running on the DE1-SoC: walking through the maze in first person" width="700">
-</p>
+https://github.com/user-attachments/assets/8940a5df-ba85-441f-8bde-de87af83c0e5
 
-<p align="center"><em>Running on hardware. <a href="doc/media/demo.mp4">Full video</a>.</em></p>
+<p align="center"><em>Running on the board. Walking a corridor, turning, and the minimap tracking in sync.</em></p>
 
 ---
 
