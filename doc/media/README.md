@@ -7,7 +7,7 @@ The README hero is **a video, not a file in this folder**. It is served from Git
 and appears in the README source as a bare URL. See the section below for why, and how to replace it.
 
 The VGA output is pillarboxed on a widescreen monitor, so the raw footage has black bars on **both**
-sides of the picture. `crop=390:274:129:49` removes them. An earlier crop that kept part of those
+sides of the picture. `crop=762:582:222:118` removes them. An earlier crop that kept part of those
 bars is what made the first attempt look badly framed.
 
 | File | What it is | Notes |
@@ -75,8 +75,8 @@ every form fails:
 | A bare URL on its own line | an ordinary text link |
 | `![demo](demo.mp4)` | `<img src="...mp4">`, which no browser can play |
 
-`<video>` is not on GitHub's HTML allowlist for markdown, so the source of the file is irrelevant.
-That is why the hero is a GIF.
+`<video>` is not on GitHub's HTML allowlist for markdown, so where the file is hosted makes no
+difference. Hence the attachment-URL route above.
 
 ### How repos with playable video actually do it
 
