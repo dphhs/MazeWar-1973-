@@ -10,12 +10,11 @@ There is no CPU or soft core in the design. Every pixel comes from a state machi
 ![Toolchain](https://img.shields.io/badge/Quartus-Prime%2018.1%20Lite-orange)
 ![License](https://img.shields.io/badge/license-MIT-lightgrey)
 
-<!-- MEDIA: demo GIF. 5-8s loop, ~700px wide, <10MB so GitHub autoplays it inline. -->
 <p align="center">
-  <img src="doc/media/demo.gif" alt="Mazewar running on the DE1-SoC" width="700">
+  <img src="doc/media/screenshot.jpg" alt="Mazewar on the DE1-SoC: first-person corridor view with live minimap" width="750">
 </p>
 
-<p align="center"><em>▶ <a href="#">Full demo video</a></em></p>
+<p align="center"><em>First-person view and minimap, running on hardware. <a href="doc/media/demo.mov">Demo video</a>.</em></p>
 
 ---
 
@@ -100,6 +99,8 @@ parameter logic [12:0] Distance [0:15] = '{
 ```
 
 The values crowd together as depth increases. That non-linear spacing is the perspective projection, evaluated once at design time rather than 640 times per frame. At runtime the renderer indexes the table and adds.
+
+The quantisation is visible in the screenshot above: the left wall recedes in discrete steps rather than as a smooth taper, one step per table entry.
 
 Each frame, the FSM:
 
