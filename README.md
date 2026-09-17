@@ -10,7 +10,7 @@ There is no CPU or soft core in the design. Every pixel comes from a state machi
 ![Toolchain](https://img.shields.io/badge/Quartus-Prime%2018.1%20Lite-orange)
 ![License](https://img.shields.io/badge/license-MIT-lightgrey)
 
-https://github.com/user-attachments/assets/8940a5df-ba85-441f-8bde-de87af83c0e5
+https://github.com/user-attachments/assets/cb78a6dd-839b-4528-a9c5-445bc36303fd
 
 <p align="center"><em>Running on the board. Walking a corridor, turning, and the minimap tracking in sync.</em></p>
 

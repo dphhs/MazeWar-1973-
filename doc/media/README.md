@@ -25,12 +25,22 @@ bars is what made the first attempt look badly framed.
 The current one is:
 
 ```
-https://github.com/user-attachments/assets/8940a5df-ba85-441f-8bde-de87af83c0e5
+https://github.com/user-attachments/assets/cb78a6dd-839b-4528-a9c5-445bc36303fd
 ```
 
 That bare URL sits on its own line in the root README. GitHub turns it into a `<video>` player with
-controls. Verified in the rendered output, where it resolves to
-`private-user-images.githubusercontent.com/.../8940a5df-....mp4`.
+controls.
+
+To swap in a different clip, upload the new one and replace the URL. Then confirm GitHub actually
+resolved it, rather than trusting that it looks right in the source:
+
+```sh
+curl -s -H "Accept: application/vnd.github.html" \
+     https://api.github.com/repos/dphhs/MazeWar-1973-/readme | grep -o '<video[^>]*>'
+```
+
+A rendered `<video>` whose `src` points at `private-user-images.githubusercontent.com/...<uuid>.mp4`
+means it worked. No match means GitHub did not recognise the URL, and the hero is silently empty.
 
 Repo-hosted video cannot do this. Tested against GitHub's own rendering API rather than assumed, and
 every form fails:
