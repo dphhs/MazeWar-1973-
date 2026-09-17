@@ -1,0 +1,37 @@
+# --- Intel/Altera Quartus build output ---
+db/
+incremental_db/
+greybox_tmp/
+output_files/
+simulation/
+timing/
+.qsys_edit/
+*.qws
+*.done
+*.jdi
+*.sld
+*.cdf
+*.pin
+*.rpt
+*.smsg
+*.summary
+c5_pin_model_dump.txt
+
+# --- ModelSim / QuestaSim ---
+work/
+altera_mf/
+transcript
+*.wlf
+wlft*
+vish_stacktrace.vstf
+modelsim.ini
+vsim.dbg
+
+# --- Editor / OS ---
+*.bak
+*~
+.DS_Store
+Thumbs.db
+
+# Bitstreams (*.sof) are intentionally NOT ignored — a prebuilt bitstream
+# lets someone flash the board without installing Quartus.
