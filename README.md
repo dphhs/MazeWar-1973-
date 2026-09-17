@@ -227,22 +227,3 @@ The VGA adapter, address translator and PLL are University of Toronto / Terasic 
 The renderer, the LUT approach, the player and collision logic and the system integration are my own work. Built as a course project with one collaborator.
 
 MIT licensed. See [LICENSE](LICENSE).
-
-<!-- TEMP EMBED TEST - REMOVE -->
-## Embed test
-
-A. relative video tag
-<video src="doc/media/demo.mp4" controls muted loop width="700"></video>
-
-B. raw.githubusercontent absolute
-<video src="https://raw.githubusercontent.com/dphhs/MazeWar-1973-/main/doc/media/demo.mp4" controls muted loop width="700"></video>
-
-C. github raw redirect
-<video src="https://github.com/dphhs/MazeWar-1973-/raw/main/doc/media/demo.mp4" controls muted loop width="700"></video>
-
-D. bare link on its own line
-https://github.com/dphhs/MazeWar-1973-/raw/main/doc/media/demo.mp4
-
-E. markdown image syntax pointing at mp4
-![demo](doc/media/demo.mp4)
-<!-- END TEMP -->

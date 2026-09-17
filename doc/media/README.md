@@ -12,7 +12,7 @@ is what made the first GIF look badly framed.
 | File | What it is | Notes |
 |---|---|---|
 | `demo.gif` | **Done.** Gameplay loop at the top of the README | 5.5 s from `demo.mov` (9s–14.5s), 12 fps, 80 colors, 540 px wide, 4.8 MB. Autoplays inline, being under GitHub's 10 MB limit. |
-| `demo.mp4` | **Done.** Full clip, cropped, linked from the README | H.264 CRF 23, 0.42 MB for all 21.8 s. Roughly a tenth the size of the GIF for four times the duration and better picture. See the note on playable video below. |
+| `demo.mp4` | **Done.** Full clip, cropped, linked from the README | H.264 CRF 18 at the native crop size, 0.76 MB for all 21.8 s. Don't upscale it: an 780 px encode of the same clip cost 2.86 MB and added no real detail, since the source crop is only 390 px wide. |
 | `architecture.svg` | Top-level block diagram | Export from `../TopLevelDiagram.drawio` (**not** `Schematic.drawio` — that one shows the proposed design that was never built). SVG scales cleanly and reads correctly on light and dark GitHub themes. |
 | `screenshot.jpg` | Still of the VGA output | **Done.** Serves as the README hero until a GIF exists. Doubles as hardware proof, since the monitor bezel is in frame. |
 | `board.jpg` | Photo of the DE1-SoC running the game | Proves real hardware rather than simulation. Cheap to capture, disproportionately convincing. |
@@ -21,8 +21,21 @@ is what made the first GIF look badly framed.
 
 ## Making the video actually play on the page
 
-GitHub will not render a `<video>` tag pointing at a file in the repo, so `demo.mp4` is only a
-download link. It *will* play inline if the file is served from GitHub's own attachment CDN:
+Repo-hosted video cannot play inline. This was tested against GitHub's own rendering API rather than
+assumed, and every form fails:
+
+| Written in the README | What GitHub renders |
+|---|---|
+| `<video src="doc/media/demo.mp4">` | tag stripped, nothing left |
+| `<video>` with a `raw.githubusercontent.com` URL | tag stripped |
+| `<video>` with a `github.com/.../raw/...` URL | tag stripped |
+| A bare URL on its own line | an ordinary text link |
+| `![demo](demo.mp4)` | `<img src="...mp4">`, which no browser can play |
+
+`<video>` is not on GitHub's HTML allowlist for markdown, so the source of the file is irrelevant.
+That is why the hero is a GIF.
+
+Video *will* play inline if the file is served from GitHub's own attachment CDN:
 
 1. Open any issue on the repo (it does not need to be submitted, or can be deleted after).
 2. Drag `demo.mp4` into the comment box and wait for the upload to finish.
