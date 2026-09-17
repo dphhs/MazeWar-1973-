@@ -27,6 +27,11 @@ vish_stacktrace.vstf
 modelsim.ini
 vsim.dbg
 
+# --- Private working notes ---
+# Local planning doc. Intentionally untracked: it contains candid working
+# notes that are not meant to be published alongside the code.
+PROJECT_NOTES.md
+
 # --- Editor / OS ---
 *.bak
 *~
