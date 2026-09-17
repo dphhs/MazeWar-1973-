@@ -35,7 +35,31 @@ assumed, and every form fails:
 `<video>` is not on GitHub's HTML allowlist for markdown, so the source of the file is irrelevant.
 That is why the hero is a GIF.
 
-Video *will* play inline if the file is served from GitHub's own attachment CDN:
+### How repos with playable video actually do it
+
+Authors never write the `<video>` tag. **GitHub generates it.** Checking a repo that has one
+([tiny-tpu](https://github.com/tiny-tpu-v2/tiny-tpu)), its README source is a bare URL alone on a
+line:
+
+```
+https://github.com/user-attachments/assets/b5d6aefe-4250-4c6d-866e-65d519e4de74
+```
+
+GitHub's renderer recognises the attachment URL and emits the player itself, with its own classes
+and a short-lived signed URL on `private-user-images.githubusercontent.com`:
+
+```html
+<video src="https://private-user-images.githubusercontent.com/...mp4?jwt=..."
+       controls="controls" muted="muted" class="d-block rounded-bottom-2 border-top width-fit">
+```
+
+So the rule is that only GitHub may emit `<video>`, and only for its own attachment URLs. A hand-written
+tag is stripped no matter what it points at. The signed URL expires, but the
+`user-attachments/assets/<uuid>` form in the README is stable; GitHub re-signs it on each render.
+
+### Getting such a URL
+
+There is no API for this. The upload happens through the web UI: 
 
 1. Open any issue on the repo (it does not need to be submitted, or can be deleted after).
 2. Drag `demo.mp4` into the comment box and wait for the upload to finish.
