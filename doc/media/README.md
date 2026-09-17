@@ -12,8 +12,8 @@ bars is what made the first attempt look badly framed.
 
 | File | What it is | Notes |
 |---|---|---|
-| `demo.mp4` | **Done.** The clip uploaded to GitHub to produce the hero video | H.264 CRF 18 at the native crop size, 0.76 MB for all 21.8 s. Keep it: re-uploading needs this file. Don't upscale it either, a 780 px encode cost 2.86 MB and added no detail the 390 px source didn't have. |
-| `demo.mov` | Uncropped original from the phone | The only source with the full frame. Keep it if the crop might ever be redone. |
+| `demo.mp4` | **Upload this one** to produce the hero video | 762×582, H.264 High, CRF 19, 2.6 MB for 21.8 s. Cropped from `demo_source.mov`. |
+| `demo_source.mov` | Uncropped 1280×720 original from the phone | The only source with the full frame. Needed to redo the crop. |
 | `screenshot.jpg` | **Done.** Still of the VGA output, used in the rendering section | A crisp still beats a paused video for detail, and it sits beside the text explaining that each wall step is one distance-table entry. |
 | `architecture.svg` | Top-level block diagram | Export from `../TopLevelDiagram.drawio` (**not** `Schematic.drawio` — that one shows the proposed design that was never built). SVG scales cleanly and reads correctly on light and dark GitHub themes. |
 | `board.jpg` | Photo of the DE1-SoC running the game | Proves real hardware rather than simulation. Cheap to capture, disproportionately convincing. |
@@ -31,8 +31,30 @@ https://github.com/user-attachments/assets/cb78a6dd-839b-4528-a9c5-445bc36303fd
 That bare URL sits on its own line in the root README. GitHub turns it into a `<video>` player with
 controls.
 
-To swap in a different clip, upload the new one and replace the URL. Then confirm GitHub actually
-resolved it, rather than trusting that it looks right in the source:
+### Upload MP4, never MOV
+
+GitHub serves an uploaded file under a content type derived from its extension, and that decides
+whether browsers can play it:
+
+| Uploaded as | Served as | Result |
+|---|---|---|
+| `.mp4` | `video/mp4` | plays everywhere |
+| `.MOV` | `video/quicktime` | **Firefox will not play it**, even though the stream inside is H.264 |
+
+A `.MOV` upload looks fine in Chrome and Safari, so the breakage is easy to miss. Convert to MP4
+first; the container change alone fixes it, and re-encoding is not strictly required.
+
+Check which one a live hero is by decoding the `response-content-type` in the rendered URL:
+
+```sh
+curl -s -H "Accept: application/vnd.github.html" \
+     https://api.github.com/repos/dphhs/MazeWar-1973-/readme | grep -o 'response-content-type=[^"&]*'
+```
+
+### Swapping in a different clip
+
+Upload the new one and replace the URL. Then confirm GitHub actually resolved it, rather than
+trusting that it looks right in the source:
 
 ```sh
 curl -s -H "Accept: application/vnd.github.html" \
@@ -96,16 +118,21 @@ the safest codec across browsers, which is what `demo.mp4` uses.
 Recipe used for the current `demo.mp4`, which is what gets uploaded to produce the hero:
 
 ```sh
-ffmpeg -i demo.mov -vf "crop=390:274:129:49" -c:v libx264 -preset veryslow -crf 18 \
-       -pix_fmt yuv420p -movflags +faststart -an -y demo.mp4
+ffmpeg -i demo_source.mov -vf "crop=762:582:222:118" -c:v libx264 -preset veryslow -crf 19 \
+       -pix_fmt yuv420p -profile:v high -movflags +faststart -an -y demo.mp4
 ```
 
-`crop=390:274:129:49` is the game picture with the pillarbox bars removed. Verify any change to it
-against a still before encoding: cropping past 390 wide clips the minimap's right border, and
-leaving it wider pulls the black bars back in.
+`crop=762:582:222:118` is the game picture on the 1280×720 source with the pillarbox bars removed.
+The result is 762×582, close to the 4:3 of the real 640×480 output, which is the sanity check that
+the crop is right. Re-measure rather than guess if the source is ever re-shot; camera framing moves
+between recordings. Overlay a grid on a still to do it:
 
-Trim with `-ss <start> -t <duration>` if a shorter clip is wanted. The whole 21.8 s costs 0.76 MB,
-so there is little reason to.
+```sh
+ffmpeg -ss 2 -i demo_source.mov -frames:v 1 -vf "drawgrid=w=128:h=72:t=2:c=red@0.9" grid.png
+```
+
+Trim with `-ss <start> -t <duration>` for a shorter clip. The whole 21.8 s costs 2.6 MB, well inside
+the 10 MB limit, so there is little reason to.
 
 ### If a GIF is ever needed instead
 
@@ -113,10 +140,10 @@ Only worth it somewhere that can't host the video, since the GIF was **six times
 quarter of the duration**. Two-pass palette, otherwise flat colour bands badly:
 
 ```sh
-VF="crop=390:274:129:49,fps=12,scale=540:-1:flags=lanczos"
+VF="crop=762:582:222:118,fps=12,scale=540:-1:flags=lanczos"
 
-ffmpeg -ss 9 -t 5.5 -i demo.mov -vf "$VF,palettegen=max_colors=80" -y palette.png
-ffmpeg -ss 9 -t 5.5 -i demo.mov -i palette.png \
+ffmpeg -ss 9 -t 5.5 -i demo_source.mov -vf "$VF,palettegen=max_colors=80" -y palette.png
+ffmpeg -ss 9 -t 5.5 -i demo_source.mov -i palette.png \
        -lavfi "$VF[x];[x][1:v]paletteuse=dither=bayer:bayer_scale=5" -y demo.gif
 ```
 
