@@ -1,28 +1,39 @@
 # Media assets
 
-The root `README.md` references these files. Until they exist, those images render as broken links
-on GitHub — so either add them or remove the corresponding `<img>` tags before making the repo public.
+The root `README.md` references these files. Any that don't exist render as broken images on GitHub,
+so add them or drop the corresponding `<img>` tag before showing the repo to anyone.
 
-**Present:** `demo.gif` (README hero), `screenshot.jpg` (rendering section), `demo.mp4` (linked as "full video"), `demo.mov` (uncropped original, keep as the source for re-cropping).
+The README hero is **a video, not a file in this folder**. It is served from GitHub's attachment CDN
+and appears in the README source as a bare URL. See the section below for why, and how to replace it.
 
 The VGA output is pillarboxed on a widescreen monitor, so the raw footage has black bars on **both**
-sides of the picture. The crop below removes them. An earlier crop that included part of those bars
-is what made the first GIF look badly framed.
+sides of the picture. `crop=390:274:129:49` removes them. An earlier crop that kept part of those
+bars is what made the first attempt look badly framed.
 
 | File | What it is | Notes |
 |---|---|---|
-| `demo.gif` | **Done.** Gameplay loop at the top of the README | 5.5 s from `demo.mov` (9s–14.5s), 12 fps, 80 colors, 540 px wide, 4.8 MB. Autoplays inline, being under GitHub's 10 MB limit. |
-| `demo.mp4` | **Done.** Full clip, cropped, linked from the README | H.264 CRF 18 at the native crop size, 0.76 MB for all 21.8 s. Don't upscale it: an 780 px encode of the same clip cost 2.86 MB and added no real detail, since the source crop is only 390 px wide. |
+| `demo.mp4` | **Done.** The clip uploaded to GitHub to produce the hero video | H.264 CRF 18 at the native crop size, 0.76 MB for all 21.8 s. Keep it: re-uploading needs this file. Don't upscale it either, a 780 px encode cost 2.86 MB and added no detail the 390 px source didn't have. |
+| `demo.mov` | Uncropped original from the phone | The only source with the full frame. Keep it if the crop might ever be redone. |
+| `screenshot.jpg` | **Done.** Still of the VGA output, used in the rendering section | A crisp still beats a paused video for detail, and it sits beside the text explaining that each wall step is one distance-table entry. |
 | `architecture.svg` | Top-level block diagram | Export from `../TopLevelDiagram.drawio` (**not** `Schematic.drawio` — that one shows the proposed design that was never built). SVG scales cleanly and reads correctly on light and dark GitHub themes. |
-| `screenshot.jpg` | Still of the VGA output | **Done.** Serves as the README hero until a GIF exists. Doubles as hardware proof, since the monitor bezel is in frame. |
 | `board.jpg` | Photo of the DE1-SoC running the game | Proves real hardware rather than simulation. Cheap to capture, disproportionately convincing. |
 | `rendering.svg` | Diagram of the perspective-band technique | Maze from above, the 16 distance bands, and the resulting on-screen trapezoids. Nothing in the repo currently illustrates the core idea. |
 | `waveform.png` | ModelSim waveform | Optional. Concrete evidence of verification work. |
 
-## Making the video actually play on the page
+## The hero video
 
-Repo-hosted video cannot play inline. This was tested against GitHub's own rendering API rather than
-assumed, and every form fails:
+The current one is:
+
+```
+https://github.com/user-attachments/assets/8940a5df-ba85-441f-8bde-de87af83c0e5
+```
+
+That bare URL sits on its own line in the root README. GitHub turns it into a `<video>` player with
+controls. Verified in the rendered output, where it resolves to
+`private-user-images.githubusercontent.com/.../8940a5df-....mp4`.
+
+Repo-hosted video cannot do this. Tested against GitHub's own rendering API rather than assumed, and
+every form fails:
 
 | Written in the README | What GitHub renders |
 |---|---|
@@ -70,10 +81,26 @@ There is no API for this. The upload happens through the web UI:
 Limits are 10 MB on a free plan, 100 MB on a paid one. MP4, MOV and WebM are accepted, and H.264 is
 the safest codec across browsers, which is what `demo.mp4` uses.
 
-## Regenerating the GIF
+## Regenerating the clip
 
-Exact recipe used for the current `demo.gif`. The crop trims the phone-camera framing down to the
-monitor screen; the two-pass palette keeps a flat-colour scene from banding.
+Recipe used for the current `demo.mp4`, which is what gets uploaded to produce the hero:
+
+```sh
+ffmpeg -i demo.mov -vf "crop=390:274:129:49" -c:v libx264 -preset veryslow -crf 18 \
+       -pix_fmt yuv420p -movflags +faststart -an -y demo.mp4
+```
+
+`crop=390:274:129:49` is the game picture with the pillarbox bars removed. Verify any change to it
+against a still before encoding: cropping past 390 wide clips the minimap's right border, and
+leaving it wider pulls the black bars back in.
+
+Trim with `-ss <start> -t <duration>` if a shorter clip is wanted. The whole 21.8 s costs 0.76 MB,
+so there is little reason to.
+
+### If a GIF is ever needed instead
+
+Only worth it somewhere that can't host the video, since the GIF was **six times the size for a
+quarter of the duration**. Two-pass palette, otherwise flat colour bands badly:
 
 ```sh
 VF="crop=390:274:129:49,fps=12,scale=540:-1:flags=lanczos"
@@ -83,19 +110,8 @@ ffmpeg -ss 9 -t 5.5 -i demo.mov -i palette.png \
        -lavfi "$VF[x];[x][1:v]paletteuse=dither=bayer:bayer_scale=5" -y demo.gif
 ```
 
-And the MP4:
-
-```sh
-ffmpeg -i demo.mov -vf "crop=390:274:129:49" -c:v libx264 -preset slow -crf 23 \
-       -pix_fmt yuv420p -movflags +faststart -an -y demo.mp4
-```
-
-`crop=390:274:129:49` is the game picture with the pillarbox bars removed. Verify any change to it
-against a frame before encoding: cropping past 390 wide clips the minimap's right border, and
-leaving it wider pulls the black bars back in.
-
-Size levers for the GIF, in the order worth pulling: `max_colors`, then `fps`, then `scale`. Clip
-length costs the most of all, which is why the GIF is 5.5 s while the MP4 keeps all 21.8 s.
+Size levers, in the order worth pulling: `max_colors`, then `fps`, then `scale`. Clip length costs
+the most of all. That combination gave 4.8 MB for 5.5 s.
 
 If `ffmpeg` isn't installed: `pip install imageio-ffmpeg` ships a binary, path via
 `python -c "import imageio_ffmpeg; print(imageio_ffmpeg.get_ffmpeg_exe())"`.
