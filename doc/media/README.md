@@ -64,8 +64,8 @@ There is no API for this. The upload happens through the web UI:
 1. Open any issue on the repo (it does not need to be submitted, or can be deleted after).
 2. Drag `demo.mp4` into the comment box and wait for the upload to finish.
 3. GitHub rewrites the box to a `https://github.com/user-attachments/assets/<uuid>` URL.
-4. Put that URL in the README on a line of its own, or in a `<video src="...">` tag. It renders as a
-   player with controls.
+4. Put that URL in the README **bare, on a line of its own**. Don't wrap it in a `<video>` tag or
+   markdown link syntax; GitHub only builds the player when it sees the raw URL.
 
 Limits are 10 MB on a free plan, 100 MB on a paid one. MP4, MOV and WebM are accepted, and H.264 is
 the safest codec across browsers, which is what `demo.mp4` uses.
