@@ -14,7 +14,7 @@ There is no CPU or soft core in the design. Every pixel comes from a state machi
   <img src="doc/media/demo.gif" alt="Mazewar running on the DE1-SoC: walking through the maze in first person" width="700">
 </p>
 
-<p align="center"><em>Running on hardware. <a href="doc/media/demo.mov">Full video</a>.</em></p>
+<p align="center"><em>Running on hardware. <a href="doc/media/demo.mp4">Full video</a>.</em></p>
 
 ---
 
